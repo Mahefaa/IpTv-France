@@ -8,8 +8,8 @@ import com.lagradost.cloudstream3.utils.Qualities
 import java.io.InputStream
 
 class IptvorgProvider : MainAPI() {
-    override var lang = "en"
-    override var mainUrl = "https://raw.githubusercontent.com/iptv-org/iptv/master/README.md"
+    override var lang = "fr"
+    override var mainUrl = "https://raw.githubusercontent.com/Mahefaa/IpTv-France/master/tv.md"
     override var name = "Iptv-org"
     override val hasMainPage = true
     override val hasChromecastSupport = true
@@ -22,7 +22,7 @@ class IptvorgProvider : MainAPI() {
         request : MainPageRequest
     ): HomePageResponse {
         val data = app.get(mainUrl).document
-        val table = data.select("tbody")[2].select("td").chunked(3)
+        val table = data.select("tbody")[0].select("td").chunked(1)
         val shows = table.map { nation ->
             val channelUrl = nation[2].text()
             val nationName = nation[0].text()
