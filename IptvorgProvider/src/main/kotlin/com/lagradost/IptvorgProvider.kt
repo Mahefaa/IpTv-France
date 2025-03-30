@@ -19,16 +19,13 @@ class IptvorgProvider : MainAPI() {
 
     override suspend fun getMainPage(
         page: Int,
-        request : MainPageRequest
+        request: MainPageRequest
     ): HomePageResponse {
-        val data = app.get(mainUrl).document
-        val table = data.select("tbody")[2].select("td").chunked(3)
+        val table = listOf(Nation("https://iptv-org.github.io/iptv/countries/fr.m3u", "France"))
         val shows = table.map { nation ->
-            val channelUrl = nation[2].text()
-            val nationName = nation[0].text()
-            val nationPoster = "https://github.com/emcrisostomo/flags/raw/master/png/256/${channelUrl
-                .substringAfterLast("/")
-                .substringBeforeLast(".").uppercase()}.png"
+            val channelUrl = nation.getUrl()
+            val nationName = nation.getName()
+            val nationPoster = nation.getPoster()
             LiveSearchResponse(
                 nationName,
                 LoadData(channelUrl, nationName, nationPoster, 0).toJson(),
@@ -38,37 +35,41 @@ class IptvorgProvider : MainAPI() {
             )
         }
         return HomePageResponse(
-            listOf(HomePageList(
-                "Nations",
-                shows,
-                true
-            ))
+            listOf(
+                HomePageList(
+                    "Nations",
+                    shows,
+                    true
+                )
+            )
         )
 
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val data = IptvPlaylistParser().parseM3U(app.get("https://iptv-org.github.io/iptv/countries/fr.m3u").text)
+        val data =
+            IptvPlaylistParser().parseM3U(app.get("https://iptv-org.github.io/iptv/countries/fr.m3u").text)
 
-        return data.items.filter { it.title?.lowercase()?.contains(query.lowercase()) ?: false }.map { channel ->
-            val streamurl = channel.url.toString()
-            val channelname = channel.attributes["tvg-id"].toString()
-            val posterurl = channel.attributes["tvg-logo"].toString()
-            LiveSearchResponse(
-                channelname,
-                LoadData(streamurl, channelname, posterurl, 1).toJson(),
-                this@IptvorgProvider.name,
-                TvType.Live,
-                posterurl,
-            )
-        }
+        return data.items.filter { it.title?.lowercase()?.contains(query.lowercase()) ?: false }
+            .map { channel ->
+                val streamurl = channel.url.toString()
+                val channelname = channel.attributes["tvg-id"].toString()
+                val posterurl = channel.attributes["tvg-logo"].toString()
+                LiveSearchResponse(
+                    channelname,
+                    LoadData(streamurl, channelname, posterurl, 1).toJson(),
+                    this@IptvorgProvider.name,
+                    TvType.Live,
+                    posterurl,
+                )
+            }
     }
 
 
     override suspend fun load(url: String): LoadResponse {
         val loadData = parseJson<LoadData>(url)
 
-        if (loadData.flag == 0){
+        if (loadData.flag == 0) {
             val playlist = IptvPlaylistParser().parseM3U(app.get(loadData.url).text)
             val showlist = playlist.items.mapIndexed { index, channel ->
                 val streamurl = channel.url.toString()
@@ -91,8 +92,7 @@ class IptvorgProvider : MainAPI() {
                 showlist,
                 loadData.poster
             )
-        }
-        else return LiveStreamLoadResponse(
+        } else return LiveStreamLoadResponse(
             loadData.channelName,
             loadData.url,
             this.name,
@@ -100,12 +100,14 @@ class IptvorgProvider : MainAPI() {
             loadData.poster
         )
     }
+
     data class LoadData(
         val url: String,
         val channelName: String,
         val poster: String,
-        val flag : Int
+        val flag: Int
     )
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
