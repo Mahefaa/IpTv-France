@@ -22,7 +22,7 @@ class IptvorgProvider : MainAPI() {
         request : MainPageRequest
     ): HomePageResponse {
         val data = app.get(mainUrl).document
-        val table = data.select("tbody")[0].select("td").chunked(1)
+        val table = data.select("tbody")[2].select("td").chunked(3)
         val shows = table.map { nation ->
             val channelUrl = nation[2].text()
             val nationName = nation[0].text()
