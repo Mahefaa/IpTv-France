@@ -1,19 +1,21 @@
-import com.lagradost.cloudstream3.gradle.CloudstreamExtension 
+import com.lagradost.cloudstream3.gradle.CloudstreamExtension
 import com.android.build.gradle.BaseExtension
 
 buildscript {
     repositories {
         google()
         mavenCentral()
-        // Shitpack repo which contains our tools and dependencies 
+        // Shitpack repo which contains our tools and dependencies
         maven("https://jitpack.io")
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath("com.android.tools.build:gradle:8.6.0")
         // Cloudstream gradle plugin which makes everything work and builds plugins
         classpath("com.github.recloudstream:gradle:-SNAPSHOT")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
+
+
     }
 }
 
@@ -40,6 +42,7 @@ subprojects {
     }
 
     android {
+        namespace ="com.lagradost"
         defaultConfig {
             minSdk = 21
             compileSdkVersion(33)
@@ -67,9 +70,6 @@ subprojects {
         val apk by configurations
         val implementation by configurations
 
-        // Stubs for all Cloudstream classes
-        apk("com.lagradost:cloudstream3:pre-release")
-
         // these dependencies can include any of those which are added by the app,
         // but you dont need to include any of them if you dont need them
         // https://github.com/recloudstream/cloudstream/blob/master/app/build.gradle
@@ -78,6 +78,10 @@ subprojects {
         implementation("org.jsoup:jsoup:1.16.2") // html parser
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
         implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
+
+            // Stubs for all Cloudstream classes
+            apk("com.lagradost:cloudstream3:pre-release")
+
     }
 }
 
