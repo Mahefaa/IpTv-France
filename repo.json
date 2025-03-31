@@ -1,8 +1,8 @@
 {
-  "name": "Mahefa IpTv France",
-  "description": "fork of italian iptv org provider, filter only french iptv from iptv-org",
+  "name": "Mahefa CS-Extensions",
+  "description": "fork of multilingual extensions i found and modified to include french only",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/Mahefaa/IpTv-France/builds/plugins.json"
+    "https://raw.githubusercontent.com/Mahefaa/CS-Extensions/builds/plugins.json"
   ]
 }
